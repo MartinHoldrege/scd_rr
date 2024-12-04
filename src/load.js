@@ -8,6 +8,7 @@
 // dependencies -----------------------------------------------------------------
 
 var SEI = require("users/MartinHoldrege/SEI:src/SEIModule.js");
+var f = require("users/MartinHoldrege/scd_rr:src/general_functions.js");
 
 // params -----------------------------------------------------------------------
 
@@ -33,6 +34,8 @@ var scenRrD = {
   'RCP85_2071-2100': '2064-2099-RCP85'
 };
 
+
+
 // loading scd assets ----------------------------------------------
 
 // note when the rasters were ingested into gee they lost they're band names
@@ -44,11 +47,31 @@ var histSEI = ee.Image(pathPub + 'SEI-Q_v11_2017-2020')
 exports.histC3 = SEI.seiToC3(histSEI.select('Q5s')); // historical 3 class SEI
 
 
+var getFutSEI = function(args) {
+  
+  var scen = args.scen;
+  var run = f.ifNull(args.run, 'Default');
+  var summaries = f.ifNull(args.summaries, ['median']);
+  
+  // add .* to convert to usable regex
+  var summaries2 = summaries.map(function(x) {
+    return '.*' + x;
+  });
+  
+  // currently don't actually need to the the scenScdD dictionary
+  // but if change input in the future it could be helpufl
+  var pathImage = pathPub + 'SEI_' + run + '_' + scenScD[scen];
+  var futSEI = ee.Image(pathImage)
+    .rename(['SEI_low', 'SEI_high', 'SEI_median'])
+    .select(summaries);
+    
+  return futSEI;
+};
 
-var loadSEIClass = function(nameRun, nameScen) {
-  var image = SEI.seiToC3(getFutSEI(nameRun, nameScen));
-  var imageName = 'c3_' + nameRun + '_' + scenD2[nameScen];
-  return ui.Map.Layer(image, figP.visc3, imageName);
+
+var getFutC3 = function(args) {
+  var image = SEI.seiToC3(getFutSEI(args));
+  return image;
 };
 
 
