@@ -1,7 +1,7 @@
 /*
   Purpose: Functions for loading datasets. This way these
   functions can be updated as needed (if data sources change)
-  but downstream code won't be (as) affected
+  but downstream code won't need to be changed (or changed less)
 
 */
 
@@ -48,7 +48,6 @@ var varRrD = {
   'Resil-cont-delta': ['Resil-cont', '-delta'],
   'Resist-cont-delta': ['Resist-cont', '-delta']
 };
-
 
 
 // loading scd assets ----------------------------------------------
@@ -120,7 +119,7 @@ var createRrImageName = function(varName, scen) {
  *    scen: the scenario of the the names in the scenRrD object. 
  * @return image with 1 band
  */
-var getRr = function(args) {
+exports.getRr = function(args) {
     // form the image name
     var imageName = createRrImageName(args.varName, args.scen); 
     
