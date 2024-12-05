@@ -43,3 +43,48 @@ exports.matchProjections = function(image1, image2) {
 
   return alignedImage2;
 };
+
+
+/**
+ * Area of pixels belonging to each group
+ * 
+ * @param {ee.Image} image input that contains a grouping/classification/id band
+ * @param {ee.String} groupName name of band that will be used for grouping (i.e. the ids)
+ * @param (ee.Feature} region to apply reducer to
+ * @param {ee.Number} scale to using when applying reducer 
+ * 
+ * @return {ee.FeatureCollection} area of each unique value in groupName
+ * Note this function was originally defined in the 
+ * "users/mholdrege/newRR_metrics:src/functions.js" module
+*/
+exports.areaByGroup = function(image, groupName, region, scale) {
+  var areaImage = ee.Image.pixelArea()
+    .addBands(image.select(groupName));
+ 
+  
+  var areas = areaImage.reduceRegion({
+        reducer: ee.Reducer.sum().group({
+        groupField: 1,
+        groupName: groupName,
+      }),
+      geometry: region,
+      scale: scale,
+      maxPixels: 1e12
+      }); 
+  
+  
+  // converting a feature collection so that it can be output as csv
+    var areasDict = ee.List(areas.get('groups')).map(function (x) {
+    
+    var dict = {area_m2: ee.Dictionary(x).get('sum')};
+    
+    // passing groupName as a variable to become the name in the dictionary
+    dict[groupName] = ee.Number(ee.Dictionary(x).get(groupName)).toInt64();
+    
+    return ee.Feature(null, dict);
+  });
+  
+  var areasFc = ee.FeatureCollection(areasDict);
+  
+  return areasFc;
+};
