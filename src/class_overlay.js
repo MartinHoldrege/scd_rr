@@ -1,5 +1,5 @@
 /*
-  Purpose: Create an overlay of SEI class and R&R class,
+  Purpose: A function that combines SEI class and R&R class,
   so the first number in a pixel gives the SEI class (1-3, 1 = CSA, 3 = ORA)
   and the second gives the R&R class (1-4, 1 = low, 4 LH/H)
 
@@ -36,9 +36,7 @@ Overlay showing combination of SEI class and RR class
      varName: name of the categorical variable (Resist-cats or Resil-cats)
      Note--down the road this can be expanded so the summary (median, min, max)
      can also be defined, now defaults to median
-@return (ee.Image) contains
-  
-
+@return (ee.Image) where first pixel is SEI class second is RR class
 */
 var getC3RrOverlay = function(args) {
   var c3 = load.getC3(args);
