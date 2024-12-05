@@ -11,6 +11,7 @@
 
 var over = require("users/MartinHoldrege/scd_rr:src/overlay.js");
 var SEI = require("users/MartinHoldrege/SEI:src/SEIModule.js");
+var f = require("users/MartinHoldrege/scd_rr:src/general_functions.js");
 
 // params ---------------------------------------------------------------------
 
@@ -23,7 +24,7 @@ var scenarioL0 = ['RCP45_2031-2060', 'RCP45_2071-2100',
                  
 var varRrL0 = ['Resil-cats', 'Resist-cats'];
 var summaryL0 = ['median']; // for now can only median (this is the summary across GCMs)
-var run = 'Default' // STEPWAT modeling assumptions
+var run = 'Default'; // STEPWAT modeling assumptions
 if (testRun) {
   var region = ee.Geometry.Polygon(
         [[[-111.90993878348308, 41.94966671235399],
@@ -51,27 +52,47 @@ scenarioL0.forEach(function(scenario) {
 });
 
 if (testRun) {
-  var scenarioL = scenarioL.slice(0, 1);
+  var scenarioL = scenarioL.slice(0, 2);
 }
 
 
 // create images and calculate areas -------------------------------------
 
+var areaFc = ee.FeatureCollection([]);
 
-var i = 0;
+for(var i = 0; i < scenarioL.length; i++) {
 
-var scen = scenarioL[i];
-var varRr = varRrL[i];
-var summary = summaryL[i];
+  var scen = scenarioL[i];
+  var varRr = varRrL[i];
+  var summary = summaryL[i];
+  
+  // create image where first digit is SEI class, second is R&R class
+  var c3RrImage = over.createC3RrOverlay({
+    scen: scen,
+    run: 'Default',
+    varName: varRr
+  });
+  
+  var area0 = f.areaByGroup(c3RrImage, 'c3Rr', region, scale);
+  
+  var area1 = area0.map(function(feature) {
+    
+    var area_m2 = feature.get('area_m2');
+    var area_ha = ee.Number(area_m2).divide(ee.Number(10000));
+    
+    return feature
+      .select(feature.propertyNames().remove('area_m2'))
+      .set('summary', summary)
+      .set('scenario', scen)
+      .set('variableRR', varRr)
+      .set('assumption', run)
+      .set('area_ha', area_ha);
+  });
 
-// create image where first digit is SEI class, second is R&R class
-var c3RrImage = over.createC3RrOverlay({
-  scen: scen,
-  run: 'Default',
-  varName: varRr
-});
+  var areaFc = areaFc.merge(area1);
+}
 
-print(c3RrImage)
+// save output ------------------------------------------------------------------
 
 
 
