@@ -50,7 +50,7 @@ var createC3RrOverlay = function(args) {
   var c3_10 = c3.multiply(10);
 
   var comb1 = c3_10.add(rr); // first digit is SEI class, second digit is RR class. 
-  return comb1.rename('c3_rr');
+  return comb1.rename('c3Rr');
 };
 
 exports.createC3RrOverlay = createC3RrOverlay;
