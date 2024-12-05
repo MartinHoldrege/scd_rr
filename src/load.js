@@ -79,7 +79,7 @@ var getFutSEI = function(args) {
   var pathImage = pathPub + 'SEI_' + run + '_' + scenScdD[scen];
   var futSEI = ee.Image(pathImage)
     .rename(['SEI_low', 'SEI_high', 'SEI_median'])
-    .select(summaries);
+    .select(summaries2);
     
   return futSEI;
 };
