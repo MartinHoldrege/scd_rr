@@ -10,34 +10,47 @@
 
 // dependencies -----------------------------------------------------------
 
-var SEI = require("users/MartinHoldrege/SEI:src/SEIModule.js");
+// var SEI = require("users/MartinHoldrege/SEI:src/SEIModule.js");
 var load = require("users/MartinHoldrege/scd_rr:src/load.js");
+var f = require("users/MartinHoldrege/scd_rr:src/general_functions.js");
 
 // params ------------------------------------------------------------------
 
-var crs = SEI.crs; // to transform RR so that the overlay is exact. 
+var mask = load.getC3({scen: 'historical'}).gt(0);
 
-// TO DO
-// the following code will put into a function
+
+// readin in and combine images
 var args = {
   scen: 'historical',
   varName: 'Resist-cats'// the name of the R&R variable (needs to be categorical)
 };
 
-var c3 = load.getC3(args);
-var rr = load.getRr(args);
-print(c3)
-print(c3.projection().wkt())
 
-// CONTINUE HERE
-// steps
-// transform 
-// Compare transform (affine) parameters
-var transform1 = proj1.transform();
-var transform2 = proj2.transform();
+/*
+Overlay showing combination of SEI class and RR class
 
-if (ee.Algorithms.IsEqual(transform1, transform2)) {
-  print('Transform parameters are identical.');
-} else {
-  print('Transform parameters differ.');
-}
+@param {object} arg can contain the following items:
+     scen: the scenario, string of form 'RCP_yyyy-yyyy' (see names of scenScdD (in load module
+      for possible options, or 'historical')
+     run: optional string default is 'Default', (i.e. the modeling assumption from STEPWAT2)
+     varName: name of the categorical variable (Resist-cats or Resil-cats)
+     Note--down the road this can be expanded so the summary (median, min, max)
+     can also be defined, now defaults to median
+@return (ee.Image) contains
+  
+
+*/
+var getC3RrOverlay = function(args) {
+  var c3 = load.getC3(args);
+  var rr0 = load.getRr(args);
+
+  var rr = ee.Image(f.matchProjections(c3, rr0))
+    .updateMask(mask);
+
+  var c3_10 = c3.multiply(10);
+
+  var comb1 = c3_10.add(rr); // first digit is SEI class, second digit is RR class. 
+  return comb1.rename('c3_rr');
+};
+
+exports.calcC3RrOverlay;
