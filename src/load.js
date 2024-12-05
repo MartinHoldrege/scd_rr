@@ -93,13 +93,15 @@ var getFutSEI = function(args) {
  * dictionary element)
  * @return image with 1-3 bands. 
  */
-exports.getC3 = function(args) {
+var getC3 = function(args) {
   if(args.scen == 'historical') {
     return histC3;
   }
   var image = SEI.seiToC3(getFutSEI(args));
   return image;
 };
+
+exports.getC3 = getC3;
 
 
 // functions for loading rr assets -----------------------------------------------
@@ -119,11 +121,15 @@ var createRrImageName = function(varName, scen) {
  *    scen: the scenario of the the names in the scenRrD object. 
  * @return image with 1 band
  */
-exports.getRr = function(args) {
+var getRr = function(args) {
     // form the image name
     var imageName = createRrImageName(args.varName, args.scen); 
     
     var image = ee.Image(pathRr + imageName);
     return image;
 };
+
+exports.getRr = getRr;
+
+
 
