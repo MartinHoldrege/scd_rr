@@ -29,7 +29,7 @@ exports.ifNull = function(x, replace) {
   @param {ee.Image} image1, reference image
   @param (ee.Image) image2, image to align with image1
 */
-var matchProjections = function(image1, image2) {
+exports.matchProjections = function(image1, image2) {
   // Get the projection of image1
   var projection1 = image1.projection();
 
