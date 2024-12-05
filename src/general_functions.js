@@ -20,3 +20,26 @@ exports.ifNull = function(x, replace) {
     return x;
   }
 };
+
+
+/*
+  align two images, mostly used prior to adding images that both contain class levels
+  to get class combinations (where partially overlapping pixels can create
+  non-existing class combinations)
+  @param {ee.Image} image1, reference image
+  @param (ee.Image) image2, image to align with image1
+*/
+var matchProjections = function(image1, image2) {
+  // Get the projection of image1
+  var projection1 = image1.projection();
+
+  // Reproject image2 to match image1's CRS and transform
+  // keeping this as a function, so can improve how this is
+  // done if needed
+  var alignedImage2 = image2.reproject({
+    crs: projection1.wkt(),
+    scale: projection1.nominalScale()
+  });
+
+  return alignedImage2;
+};
