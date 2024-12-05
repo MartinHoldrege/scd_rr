@@ -1,11 +1,13 @@
 /*
-  Purpose: A function that combines SEI class and R&R class,
+ @module
+  Purpose: function(s) that combine( SEI class and R&R class,
   so the first number in a pixel gives the SEI class (1-3, 1 = CSA, 3 = ORA)
   and the second gives the R&R class (1-4, 1 = low, 4 LH/H)
 
   Author: Martin Holdrege
   
-  Date started: December 4, 2024
+  to load:
+  var over = require("users/MartinHoldrege/scd_rr:src/overlay.js");
 */
 
 // dependencies -----------------------------------------------------------
