@@ -40,7 +40,7 @@ Overlay showing combination of SEI class and RR class
      can also be defined, now defaults to median
 @return (ee.Image) where first pixel is SEI class second is RR class
 */
-var getC3RrOverlay = function(args) {
+var createC3RrOverlay = function(args) {
   var c3 = load.getC3(args);
   var rr0 = load.getRr(args);
 
@@ -53,4 +53,4 @@ var getC3RrOverlay = function(args) {
   return comb1.rename('c3_rr');
 };
 
-exports.calcC3RrOverlay;
+exports.createC3RrOverlay = createC3RrOverlay;
