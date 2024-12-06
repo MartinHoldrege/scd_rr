@@ -15,11 +15,12 @@ var f = require("users/MartinHoldrege/scd_rr:src/general_functions.js");
 
 // params ---------------------------------------------------------------------
 
-var testRun = true;
+var v = 'v1' // version, for appending to output
+var testRun = false;
 var region = SEI.region;
 var scale = 90; // this is the scale of the scd data
 
-var scenarioL0 = ['RCP45_2031-2060', 'RCP45_2071-2100', 
+var scenarioL0 = ['historical', 'RCP45_2031-2060', 'RCP45_2071-2100', 
                  'RCP85_2031-2060', 'RCP85_2071-2100'];
                  
 var varRrL0 = ['Resil-cats', 'Resist-cats'];
@@ -27,10 +28,10 @@ var summaryL0 = ['median']; // for now can only median (this is the summary acro
 var run = 'Default'; // STEPWAT modeling assumptions
 if (testRun) {
   var region = ee.Geometry.Polygon(
-        [[[-111.90993878348308, 41.94966671235399],
-          [-111.90856549246746, 41.793206982751094],
-          [-111.19170758231121, 41.791159222023346],
-          [-111.17797467215496, 41.95681583816988]]]);
+        [[[-111.9, 41.94],
+          [-111.9, 41.79],
+          [-111.1, 41.79],
+          [-111.1, 41.95]]]);
   var scale = 720;
 }
 
@@ -94,9 +95,18 @@ for(var i = 0; i < scenarioL.length; i++) {
 
 // save output ------------------------------------------------------------------
 
+if(testRun) {
+  var fileName = 'test_area_c3rr';
+} else {
+  var fileName = 'area_c3rr_' + v;
+}
 
-
-
+Export.table.toDrive({
+  collection: areaFc,
+  description: fileName,
+  folder: 'scd_rr',
+  fileFormat: 'CSV'
+});
 
 
 
