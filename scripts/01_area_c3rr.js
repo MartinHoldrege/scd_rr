@@ -53,7 +53,7 @@ scenarioL0.forEach(function(scenario) {
 });
 
 if (testRun) {
-  var scenarioL = scenarioL.slice(0, 2);
+  // var scenarioL = scenarioL.slice(0, 2);
 }
 
 
@@ -73,7 +73,7 @@ for(var i = 0; i < scenarioL.length; i++) {
     run: 'Default',
     varName: varRr
   });
-  
+  print(i, c3RrImage); // for debugging
   var area0 = f.areaByGroup(c3RrImage, 'c3Rr', region, scale);
   
   var area1 = area0.map(function(feature) {
