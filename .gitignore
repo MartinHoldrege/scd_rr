@@ -1,6 +1,9 @@
 # folders
 /proposal
 /data_mgmt_plan
+/figures
+/data_processed
+/data_raw
 
 # misc file
 *.csv
