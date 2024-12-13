@@ -94,7 +94,6 @@ exports.rr3Class = function(image) {
   return image.remap([1, 2, 3, 4], [1, 2, 3, 3]);
 };
 
-
 // create a copy of a dictionary 
 exports.copyDict = function(originalDict) {
     var newDict = {}; // Create an empty object
