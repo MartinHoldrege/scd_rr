@@ -68,13 +68,26 @@ for(var i = 0; i < scenarioL.length; i++) {
   var summary = summaryL[i];
   
   // create image where first digit is SEI class, second is R&R class
-  var c3RrImage = over.createC3RrOverlay({
-    scen: scen,
+  var c3RrHist = over.createC3RrOverlay({
+    scenRr: 'historical',
+    scenScd: 'historical',
+    rr3Class: true, // convert RR from 4 to 3 classes
     run: 'Default',
     varName: varRr
   });
-  print(i, c3RrImage); // for debugging
-  var area0 = f.areaByGroup(c3RrImage, 'c3Rr', region, scale);
+  
+  var c3RrFut = over.createC3RrOverlay({
+    scenRr: scen,
+    scenScd: scen,
+    rr3Class: true, // convert RR from 4 to 3 classes
+    run: 'Default',
+    varName: varRr
+  });
+  // first digit is historical SEI class, 2nd is historical RR, 3rd future SEI class, 4th future Rr class;
+  var comb = c3RrHist.multiply(100).add(c3RrFut)
+    .rename('c3RrHist_C3RrFut'); 
+    
+  var area0 = f.areaByGroup(comb, 'c3RrHist_C3RrFut', region, scale);
   
   var area1 = area0.map(function(feature) {
     
@@ -98,7 +111,7 @@ for(var i = 0; i < scenarioL.length; i++) {
 if(testRun) {
   var fileName = 'test_area_c3rr';
 } else {
-  var fileName = 'area_c3rr_' + v;
+  var fileName = 'area_c3rr_historical_future_' + v;
 }
 
 Export.table.toDrive({
