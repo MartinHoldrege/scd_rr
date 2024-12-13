@@ -32,17 +32,29 @@ var args = {
 Overlay showing combination of SEI class and RR class
 
 @param {object} arg can contain the following items:
-     scen: the scenario, string of form 'RCP_yyyy-yyyy' (see names of scenScdD (in load module
-      for possible options, or 'historical')
+     scenRr: the scenario, string of form 'RCP_yyyy-yyyy' (see names of scenScdD (in load module
+      for possible options, or 'historical'), for the R&R layer
+    scenScd: the scenario for Scd    
      run: optional string default is 'Default', (i.e. the modeling assumption from STEPWAT2)
      varName: name of the categorical variable (Resist-cats or Resil-cats)
+     rr3class: (optional) should categorical R&R be converted to 3 classes? (defaults to true)
      Note--down the road this can be expanded so the summary (median, min, max)
      can also be defined, now defaults to median
 @return (ee.Image) where first pixel is SEI class second is RR class
 */
 var createC3RrOverlay = function(args) {
-  var c3 = load.getC3(args);
-  var rr0 = load.getRr(args);
+  
+  var argsC3 = f.copyDict(args);
+  argsC3.scen = args.scenScd;
+  var c3 = load.getC3(argsScd);
+  
+  var argsRr = f.copyDict(args);
+  argsRr.scen = args.scenRr;
+  var rr0 = load.getRr(argsRr);
+  
+  if (f.ifNull(args.rr3Class, true)) {
+    var rr0 = f.rr3Class(rr0)
+  }
 
   var rr = ee.Image(f.matchProjections(c3, rr0))
     .updateMask(mask);
