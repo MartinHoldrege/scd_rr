@@ -88,3 +88,7 @@ exports.areaByGroup = function(image, groupName, region, scale) {
   
   return areasFc;
 };
+
+exports.rr3Class = function(image) {
+  return image.remap([1, 2, 3, 4], [1, 2, 3, 3]);
+};
