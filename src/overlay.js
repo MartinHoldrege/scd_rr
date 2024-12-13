@@ -45,7 +45,7 @@ Overlay showing combination of SEI class and RR class
 var createC3RrOverlay = function(args) {
   
   var argsScd = f.copyDict(args);
-  argsC3.scen = args.scenScd;
+  argsScd.scen = args.scenScd;
   var c3 = load.getC3(argsScd);
   
   var argsRr = f.copyDict(args);
