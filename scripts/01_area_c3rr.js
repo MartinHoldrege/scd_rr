@@ -16,7 +16,7 @@ var f = require("users/MartinHoldrege/scd_rr:src/general_functions.js");
 // params ---------------------------------------------------------------------
 
 var v = 'v1'; // version, for appending to output
-var testRun = false;
+var testRun = true;
 var region = SEI.region;
 var scale = 90; // this is the scale of the scd data
 
