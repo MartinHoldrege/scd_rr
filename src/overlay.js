@@ -21,12 +21,7 @@ var f = require("users/MartinHoldrege/scd_rr:src/general_functions.js");
 var mask = load.getC3({scen: 'historical'}).gt(0);
 
 
-// readin in and combine images
-var args = {
-  scen: 'historical',
-  varName: 'Resist-cats'// the name of the R&R variable (needs to be categorical)
-};
-
+// functions ---------------------------------------------------------------
 
 /*
 Overlay showing combination of SEI class and RR class
@@ -66,3 +61,42 @@ var createC3RrOverlay = function(args) {
 };
 
 exports.createC3RrOverlay = createC3RrOverlay;
+
+/*
+historical and future SEI and RR classes
+
+@param {object} arg can contain the following items:
+     scen:  climate scenario. 
+     run: optional string, default is 'Default', (i.e. the modeling assumption from STEPWAT2)
+     varName: name of the categorical variable (Resist-cats or Resil-cats)
+@return (ee.Image) where first pixel is SEI class second is RR class (historical) 3rd
+is SEI class in the future, and 4th is RR class in the future
+*/
+exports.c3RrHistFutOverlay = function(args) {
+  
+  var run = args.run;
+  var varName = args.varName;
+  var scen = args.scen;
+  
+  // create image where first digit is SEI class, second is R&R class
+  var c3RrHist = over.c3RrHistFutOverlay({
+    scenRr: 'historical',
+    scenScd: 'historical',
+    rr3Class: true, // convert RR from 4 to 3 classes
+    run: run,
+    varName: varName
+  });
+  
+  var c3RrFut = over.createC3RrOverlay({
+    scenRr: scen,
+    scenScd: scen,
+    rr3Class: true, // convert RR from 4 to 3 classes
+    run: run,
+    varName: varName
+  });
+  
+  // first digit is historical SEI class, 2nd is historical RR, 3rd future SEI class, 4th future Rr class;
+  var comb = c3RrHist.multiply(100).add(c3RrFut)
+    .rename('c3RrHist_c3RrFut'); 
+  return comb;
+};
