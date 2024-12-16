@@ -15,7 +15,7 @@ var f = require("users/MartinHoldrege/scd_rr:src/general_functions.js");
 
 // params ---------------------------------------------------------------------
 
-var v = 'v1' // version, for appending to output
+var v = 'v1'; // version, for appending to output
 var testRun = false;
 var region = SEI.region;
 var scale = 90; // this is the scale of the scd data
@@ -26,6 +26,7 @@ var scenarioL0 = ['historical', 'RCP45_2031-2060', 'RCP45_2071-2100',
 var varRrL0 = ['Resil-cats', 'Resist-cats'];
 var summaryL0 = ['median']; // for now can only median (this is the summary across GCMs)
 var run = 'Default'; // STEPWAT modeling assumptions
+
 if (testRun) {
   var region = ee.Geometry.Polygon(
         [[[-111.9, 41.94],
@@ -67,23 +68,13 @@ for(var i = 0; i < scenarioL.length; i++) {
   var varRr = varRrL[i];
   var summary = summaryL[i];
   
-  // create image where first digit is SEI class, second is R&R class
-  var c3RrHist = over.createC3RrOverlay({
-    scenRr: 'historical',
-    scenScd: 'historical',
-    rr3Class: true, // convert RR from 4 to 3 classes
-    run: 'Default',
+  // first digit is historical SEI class, 2nd is historical RR, 3rd future SEI class, 4th future Rr class;
+  var comb = over.c3RrHistFutOverlay({
+    scen: scen,
+    run: run,
     varName: varRr
   });
   
-  var c3RrFut = over.createC3RrOverlay({
-    scenRr: scen,
-    scenScd: scen,
-    rr3Class: true, // convert RR from 4 to 3 classes
-    run: 'Default',
-    varName: varRr
-  });
-  // first digit is historical SEI class, 2nd is historical RR, 3rd future SEI class, 4th future Rr class;
   var comb = c3RrHist.multiply(100).add(c3RrFut)
     .rename('c3RrHist_C3RrFut'); 
     
