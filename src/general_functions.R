@@ -20,21 +20,30 @@ code2c3 <- function(x, from2digit = FALSE) {
 # from2digit is a logical, where rr class is extracted
 # from a 2 digit code, where the first digit is SEI class second is RR
 code2rr <- function(x, from2digit = FALSE) {
-  
   if(from2digit) {
     stopifnot(x > 10 & x < 100)
     x <- as.numeric(as.character(str_extract(x, '\\d$')))
   }
   stopifnot(x %in% 1:4)
-  factor(x, levels = 4:1,
-         labels = c("MH-H", "M", "ML", "L"))
+  
+  if(all(x %in% 1:3)) {
+    levels <- 3:1
+    # for the most part now moving to combing the M and MH/H 
+    # category (b/ so little area in the MH/H category)
+    labels <- c("M+H", "ML", "L")
+  } else {
+    levels <-  4:1
+    labels <-  c("MH+H", "M", "ML", "L")
+  }
+  factor(x, levels = levels,
+         labels = labels)
 }
 
 # x is vector with 2 digits numbers, first is SEI class,
 # second is RR class, returns factor with those codes
 # named
 code2c3rr <- function(x) {
-  possible_vals <- as.numeric(paste0(rep(1:3, each = 4), rep(4:1, 3)))
+  possible_vals <- as.numeric(paste0(rep(1:3, each = 3), rep(3:1, 3)))
   
   stopifnot(x %in% possible_vals)
   
@@ -51,4 +60,35 @@ rrcat2factor <- function(x) {
   stopifnot(x %in% c('Resil-cats', 'Resist-cats'))
   factor(x, levels = c('Resil-cats', 'Resist-cats'),
          labels = c('Resilience', 'Resistance'))
+}
+
+# agreement among RR and c3 class change between future and 
+# historical classification
+c3Rr_class_change <- function(c3_hist, c3_fut, RR_hist, RR_fut) {
+  stopifnot(
+    # need to be ordered factor for the > or < to be
+    # meaningful
+    is.factor(c3_hist),
+    is.factor(c3_fut),
+    is.factor(RR_hist),
+    is.factor(RR_fut)
+  )
+  c3_hist <- as.numeric(c3_hist)
+  c3_fut <- as.numeric(c3_fut)
+  RR_hist <- as.numeric(RR_hist)
+  RR_fut <- as.numeric(RR_fut)
+  
+  out <- case_when(
+    # lower levels of the factor are better
+    c3_hist == c3_fut & RR_hist == RR_fut ~ 'No Change',
+    c3_hist == c3_fut & RR_hist < RR_fut ~ 'RR Worsen',
+    c3_hist < c3_fut & RR_hist == RR_fut ~ 'SEI Worsen',
+    c3_hist < c3_fut & RR_hist < RR_fut ~ 'Both Worsen',
+    c3_hist > c3_fut & RR_hist > RR_fut ~ 'Both Improve',
+    c3_hist == c3_fut & RR_hist > RR_fut ~ 'RR Improve',
+    c3_hist > c3_fut & RR_hist == RR_fut ~ 'SEI Improve',
+    c3_hist > c3_fut & RR_hist < RR_fut |
+      c3_hist < c3_fut & RR_hist > RR_fut ~ 'Opposite Changes'
+  )
+  out
 }
