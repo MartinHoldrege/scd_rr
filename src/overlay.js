@@ -79,7 +79,7 @@ exports.c3RrHistFutOverlay = function(args) {
   var scen = args.scen;
   
   // create image where first digit is SEI class, second is R&R class
-  var c3RrHist = over.c3RrHistFutOverlay({
+  var c3RrHist = c3RrHistFutOverlay({
     scenRr: 'historical',
     scenScd: 'historical',
     rr3Class: true, // convert RR from 4 to 3 classes
@@ -87,7 +87,7 @@ exports.c3RrHistFutOverlay = function(args) {
     varName: varName
   });
   
-  var c3RrFut = over.createC3RrOverlay({
+  var c3RrFut = createC3RrOverlay({
     scenRr: scen,
     scenScd: scen,
     rr3Class: true, // convert RR from 4 to 3 classes
@@ -100,3 +100,7 @@ exports.c3RrHistFutOverlay = function(args) {
     .rename('c3RrHist_c3RrFut'); 
   return comb;
 };
+
+
+
+
