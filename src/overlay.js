@@ -102,5 +102,37 @@ exports.c3RrHistFutOverlay = function(args) {
 };
 
 
+exports.classChangeAgree = function(args) {
+  
+  var project = f.ifNull(args.matchProjections, false);
+  var argsHist = f.copyDict(args);
+  var argsHist.scen = 'Historical'
+  var c3Fut = load.getC3(args);
+  var c3Hist = load.getC3(argsHist);
 
+  var rrHist0 = load.getRr(argsHist);
+  var rr0 = load.getRr(args);
+  
+  var rrHist = f.rr3Class(rrHist0);
+  var rr = f.rr3Class(rr0);
+  
+  if (project) {
+    rr = ee.Image(f.matchProjections(c3, rr));
+    rrHist = ee.Image(f.matchProjections(c3, rrHist));
+  }
+
+  var rr = rr.updateMask(mask);
+  
+  c3Dir = ee.Image(0)
+    .where(c3Fut.gt(c3Hist), 1) // worse class (higher value means worse class)
+    .where(c3Fut.eq(c3Hist), 2) // equal
+    .where(c3Fut.lt(c3Hist), 3); // better
+    
+  RrDir = ee.Image(0)
+    .where(rr.lt(rrHist), 1) // worse class (higher value means better class)
+    .where(rr.eq(rrHist), 2) // equal
+    .where(rr.gt(rrHist), 3);  
+    
+  // continue HERE
+}
 
