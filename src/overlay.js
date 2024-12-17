@@ -106,7 +106,7 @@ exports.classChangeAgree = function(args) {
   
   var project = f.ifNull(args.matchProjections, false);
   var argsHist = f.copyDict(args);
-  var argsHist.scen = 'Historical'
+  argsHist.scen = 'Historical'
   var c3Fut = load.getC3(args);
   var c3Hist = load.getC3(argsHist);
 
