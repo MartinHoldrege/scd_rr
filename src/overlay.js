@@ -101,7 +101,8 @@ exports.c3RrHistFutOverlay = function(args) {
   return comb;
 };
 
-
+/*
+// This function hasn't been finished
 exports.classChangeAgree = function(args) {
   
   var project = f.ifNull(args.matchProjections, false);
@@ -135,4 +136,4 @@ exports.classChangeAgree = function(args) {
     
   // continue HERE
 }
-
+*/
