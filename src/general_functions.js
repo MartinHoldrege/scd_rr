@@ -2,7 +2,7 @@
  * General functions
  * 
  * load like this:
- * var f = require("users/martinholdrege/scd_rr:src/general_functions.js");
+ * var f = require("users/MartinHoldrege/scd_rr:src/general_functions.js");
  * 
  * @module src/general_functions
  */
