@@ -35,7 +35,8 @@ Overlay showing combination of SEI class and RR class
      rr3class: (optional) should categorical R&R be converted to 3 classes? (defaults to true)
      Note--down the road this can be expanded so the summary (median, min, max)
      can also be defined, now defaults to median
-@return (ee.Image) where first pixel is SEI class second is RR class
+@return (ee.Image) where first pixel is SEI class (1 = CSA) second is RR class (1 = Low), or if remap is
+      true then an image with values from 1-9 (3 class Rr needed) wher 1 is CSA, H,  and 9 is ORA, L
 */
 var createC3RrOverlay = function(args) {
   
@@ -47,7 +48,11 @@ var createC3RrOverlay = function(args) {
   argsRr.scen = args.scenRr;
   var rr0 = load.getRr(argsRr);
   
-  if (f.ifNull(args.rr3Class, true)) {
+  var rmap = f.ifNull(args.remap, false); // should pixel values be remapped?
+  
+  var convertTo3Class = f.ifNull(args.rr3Class, true); // by default convert RR to 3 classes (from 4)
+  
+  if (convertTo3Class) {
     var rr0 = f.rr3Class(rr0)
   }
 
@@ -57,7 +62,17 @@ var createC3RrOverlay = function(args) {
   var c3_10 = c3.multiply(10);
 
   var comb1 = c3_10.add(rr); // first digit is SEI class, second digit is RR class. 
-  return comb1.rename('c3Rr');
+    
+  if (rmap & convertTo3Class) {
+    var out = comb1.remap([11, 12, 13, 21, 22, 23, 31, 32, 33],
+                          [3, 2, 1, 6, 5, 4, 9, 8, 7]); // 1 is CSA, H, 9 is ORA, L
+  } else if (!rmap) {
+    var out = comb1
+  } else {
+    throw new Error("Can't remap values if RR not converted to 3 classes");
+  }
+  
+  return out.rename('c3Rr');
 };
 
 exports.createC3RrOverlay = createC3RrOverlay;
