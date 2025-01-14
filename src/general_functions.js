@@ -91,7 +91,10 @@ exports.areaByGroup = function(image, groupName, region, scale) {
 
 // combine M and M-MH RR classes into one category
 exports.rr3Class = function(image) {
-  return image.remap([1, 2, 3, 4], [1, 2, 3, 3]);
+  var names = image.bandNames();
+  return image
+    .remap([1, 2, 3, 4], [1, 2, 3, 3])
+    .rename(names);
 };
 
 // create a copy of a dictionary 
