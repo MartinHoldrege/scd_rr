@@ -52,7 +52,7 @@ var createC3RrOverlay = function(args) {
   var rr0 = load.getRr(argsRr);
   
   var rmap = f.ifNull(args.remap, false); // should pixel values be remapped?
-  var reproject = f.ifNULL(args.reproject, true)
+  var reproject = f.ifNull(args.reproject, true)
   var convertTo3Class = f.ifNull(args.rr3Class, true); // by default convert RR to 3 classes (from 4)
   
   if (convertTo3Class) {
