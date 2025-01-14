@@ -119,13 +119,23 @@ var createRrImageName = function(varName, scen) {
  * @param  {object} args is a dictionary with these elements
  *    varName: the the variable name, one of the names in the varRrD object.
  *    scen: the scenario of the the names in the scenRrD object. 
+ *    rr3Class (optional, logical, default false) convert to from
+ *    4 class to three class RR, only should be used when varName is
+ *    categorial RR
  * @return image with 1 band
  */
 var getRr = function(args) {
+  
+    var rr3Class = f.ifNull(args.rr3Class, false);
     // form the image name
     var imageName = createRrImageName(args.varName, args.scen); 
     
     var image = ee.Image(pathRr + imageName);
+    var names = image.bandNames();
+    
+    if(rr3Class) {
+      var image = f.rr3Class(image)
+    }
     return image;
 };
 
