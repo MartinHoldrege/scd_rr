@@ -75,7 +75,7 @@ for(var i = 0; i < scenarioL.length; i++) {
     varName: varRr
   });
   
-  var area0 = f.areaByGroup(comb, 'c3RrHist_c3RrFut', region, scale);
+  var area0 = f.areaByGroup2(comb, 'c3RrHist_c3RrFut', region, scale);
   
   var area1 = area0.map(function(feature) {
     
