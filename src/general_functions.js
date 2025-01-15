@@ -29,7 +29,7 @@ exports.ifNull = function(x, replace) {
   @param {ee.Image} image1, reference image
   @param (ee.Image) image2, image to align with image1
 */
-exports.matchProjections = function(image1, image2) {
+var matchProjections = function(image1, image2) {
   // Get the projection of image1
   var projection1 = image1.projection();
 
@@ -44,9 +44,13 @@ exports.matchProjections = function(image1, image2) {
   return alignedImage2;
 };
 
+exports.matchProjections = matchProjections;
+
 
 /**
- * Area of pixels belonging to each group
+ * Area of pixels belonging to each group, version 1 of this
+ * function (in the newRR_metrics repository), was not as precise,
+ * here the area image is reprojected, and area is represented as a double. 
  * 
  * @param {ee.Image} image input that contains a grouping/classification/id band
  * @param {ee.String} groupName name of band that will be used for grouping (i.e. the ids)
@@ -54,13 +58,15 @@ exports.matchProjections = function(image1, image2) {
  * @param {ee.Number} scale to using when applying reducer 
  * 
  * @return {ee.FeatureCollection} area of each unique value in groupName
- * Note this function was originally defined in the 
- * "users/mholdrege/newRR_metrics:src/functions.js" module
 */
-exports.areaByGroup = function(image, groupName, region, scale) {
-  var areaImage = ee.Image.pixelArea()
-    .addBands(image.select(groupName));
- 
+exports.areaByGroup2 = function(image, groupName, region, scale, toDouble) {
+  
+
+  var areaImage0 = matchProjections(image, ee.Image.pixelArea())
+    .toDouble();
+
+  var areaImage = areaImage0
+   .addBands(image.select(groupName));
   
   var areas = areaImage.reduceRegion({
         reducer: ee.Reducer.sum().group({
