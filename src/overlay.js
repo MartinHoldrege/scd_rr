@@ -166,12 +166,10 @@ exports.classChangeAgree = function(args) {
     var rrHist = f.rr3Class(rrHist0);
     var rr = f.rr3Class(rr0);
   } else {
-      var rrHist = rrHist0;
-  var rr = rr0;
+    var rrHist = rrHist0;
+    var rr = rr0;
   }
 
-
-  
   if (reproject) {
     rr = ee.Image(f.matchProjections(c3Hist, rr));
     rrHist = ee.Image(f.matchProjections(c3Hist, rrHist));
