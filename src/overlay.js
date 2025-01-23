@@ -171,7 +171,7 @@ exports.classChangeAgree = function(args) {
 
 
   
-  if (project) {
+  if (reproject) {
     rr = ee.Image(f.matchProjections(c3, rr));
     rrHist = ee.Image(f.matchProjections(c3, rrHist));
   }
