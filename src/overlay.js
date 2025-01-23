@@ -92,22 +92,26 @@ historical and future SEI and RR classes
      scen:  climate scenario. 
      run: optional string, default is 'Default', (i.e. the modeling assumption from STEPWAT2)
      varName: name of the categorical variable (Resist-cats or Resil-cats)
+     reproject: logical (default is true), match projections of scd and rr layers, set to false for gee maps, set to true for analytics
+     rmap: logical (default is false) remap the values (first and second digits then become 1-9), passed to the createC3RrOverlay function
 @return (ee.Image) where first pixel is SEI class second is RR class (historical) 3rd
-is SEI class in the future, and 4th is RR class in the future
+is SEI class in the future, and 4th is RR class in the future (unless rmap is true, then it's a two digit output)
 */
 exports.c3RrHistFutOverlay = function(args) {
   
   var run = args.run;
   var varName = args.varName;
   var scen = args.scen;
-  
+  var rmap = f.ifNull(args.rmap, false);
   // create image where first digit is SEI class, second is R&R class
   var c3RrHist = createC3RrOverlay({
     scenRr: 'historical',
     scenScd: 'historical',
     rr3Class: true, // convert RR from 4 to 3 classes
     run: run,
-    varName: varName
+    varName: varName,
+    reproject: args.reproject,
+    rmap: rmap
   });
   
   var c3RrFut = createC3RrOverlay({
@@ -115,30 +119,57 @@ exports.c3RrHistFutOverlay = function(args) {
     scenScd: scen,
     rr3Class: true, // convert RR from 4 to 3 classes
     run: run,
-    varName: varName
+    varName: varName,
+    reproject: args.reproject,
+    rmap: rmap
   });
   
-  // first digit is historical SEI class, 2nd is historical RR, 3rd future SEI class, 4th future Rr class;
-  var comb = c3RrHist.multiply(100).add(c3RrFut)
-    .rename('c3RrHist_c3RrFut'); 
-  return comb;
+  if (rmap) {
+    // first digit is historical SEI & RR class, 2nd digit is future SEI and R&R class
+    var comb = c3RrHist.multiply(10).add(c3RrFut);
+  } else {
+    // first digit is historical SEI class, 2nd is historical RR, 3rd future SEI class, 4th future Rr class
+    var comb = c3RrHist.multiply(100).add(c3RrFut);
+  }
+  
+  return comb.rename('c3RrHist_c3RrFut'); 
 };
 
+
 /*
-// This function hasn't been finished
+Change in class of SEI and RR
+
+@param {object} arg can contain the following items:
+     scen:  climate scenario. 
+     run: optional string, default is 'Default', (i.e. the modeling assumption from STEPWAT2)
+     varName: name of the categorical variable (Resist-cats or Resil-cats)
+     reproject: logical (default is true), match projections of scd and rr layers, set to false for gee maps, set to true for analytics
+     rr3Class: logical (default, false), convert RR to 3 classes prior to calculating class change direction
+@return (ee.Image) with 4 digits (see definitions of the levels below)
+*/
 exports.classChangeAgree = function(args) {
   
-  var project = f.ifNull(args.matchProjections, false);
+  var reproject = f.ifNull(args.reproject, true);
+  var rr3Class = f.ifNull(arge.rr3Class, false);
   var argsHist = f.copyDict(args);
-  argsHist.scen = 'Historical'
+  argsHist.scen = 'historical';
   var c3Fut = load.getC3(args);
   var c3Hist = load.getC3(argsHist);
 
   var rrHist0 = load.getRr(argsHist);
   var rr0 = load.getRr(args);
   
-  var rrHist = f.rr3Class(rrHist0);
-  var rr = f.rr3Class(rr0);
+  // note: as setup now, a change from MH+H to M RR is a decline
+  // (i.e. not converting to 3 class RR, by default), so that haver higher sensitivity
+  if (rr3Class) {
+    var rrHist = f.rr3Class(rrHist0);
+    var rr = f.rr3Class(rr0);
+  } else {
+      var rrHist = rrHist0;
+  var rr = rr0;
+  }
+
+
   
   if (project) {
     rr = ee.Image(f.matchProjections(c3, rr));
@@ -146,17 +177,28 @@ exports.classChangeAgree = function(args) {
   }
 
   var rr = rr.updateMask(mask);
+  var rrHist = rrHist.updateMask(mask);
   
   c3Dir = ee.Image(0)
     .where(c3Fut.gt(c3Hist), 1) // worse class (higher value means worse class)
-    .where(c3Fut.eq(c3Hist), 2) // equal
-    .where(c3Fut.lt(c3Hist), 3); // better
-    
+    .where(c3Fut.lte(c3Hist), 2); // equal or better
+
   RrDir = ee.Image(0)
     .where(rr.lt(rrHist), 1) // worse class (higher value means better class)
-    .where(rr.eq(rrHist), 2) // equal
-    .where(rr.gt(rrHist), 3);  
+    .where(rr.gte(rrHist), 2); // equal or better in the future
+
     
-  // continue HERE
-}
-*/
+  var comb = c3Dir
+    .multiply(10)
+    .add(RrDir)
+    .remap([22, 21, 12, 11], 
+    [1, // both stable
+    2, // RR decline
+    3, // SEI decline
+    4 // both decline
+    ]
+    );
+    
+  return comb; 
+};
+
