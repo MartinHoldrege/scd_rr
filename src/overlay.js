@@ -172,8 +172,8 @@ exports.classChangeAgree = function(args) {
 
   
   if (reproject) {
-    rr = ee.Image(f.matchProjections(c3, rr));
-    rrHist = ee.Image(f.matchProjections(c3, rrHist));
+    rr = ee.Image(f.matchProjections(c3Hist, rr));
+    rrHist = ee.Image(f.matchProjections(c3Hist, rrHist));
   }
 
   var rr = rr.updateMask(mask);
