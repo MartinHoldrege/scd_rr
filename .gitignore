@@ -4,6 +4,7 @@
 /figures
 /data_processed
 /data_raw
+/paper
 
 # misc file
 *.csv
