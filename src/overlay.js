@@ -179,11 +179,11 @@ exports.classChangeAgree = function(args) {
   var rr = rr.updateMask(mask);
   var rrHist = rrHist.updateMask(mask);
   
-  c3Dir = ee.Image(0)
+  var c3Dir = ee.Image(0)
     .where(c3Fut.gt(c3Hist), 1) // worse class (higher value means worse class)
     .where(c3Fut.lte(c3Hist), 2); // equal or better
 
-  RrDir = ee.Image(0)
+  var RrDir = ee.Image(0)
     .where(rr.lt(rrHist), 1) // worse class (higher value means better class)
     .where(rr.gte(rrHist), 2); // equal or better in the future
 
