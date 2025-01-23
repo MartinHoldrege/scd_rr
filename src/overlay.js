@@ -35,9 +35,10 @@ Overlay showing combination of SEI class and RR class
      rr3class: (optional) should categorical R&R be converted to 3 classes? (defaults to true)
      Note--down the road this can be expanded so the summary (median, min, max)
      can also be defined, now defaults to median
-     reproject (optional, default is true), reproject RR so layers match perfectly (should be 
+     reproject: (optional, default is true), reproject RR so layers match perfectly (should be 
      true for analysis, but false for map displays (b/ to large a file to be able to interactively
      reproject and view)
+     rmap: remap the output to values of 1:9
 @return (ee.Image) where first pixel is SEI class (1 = CSA) second is RR class (1 = Low), or if remap is
       true then an image with values from 1-9 (3 class Rr needed) wher 1 is CSA, H,  and 9 is ORA, L
 */
@@ -51,7 +52,7 @@ var createC3RrOverlay = function(args) {
   argsRr.scen = args.scenRr;
   var rr0 = load.getRr(argsRr);
   
-  var rmap = f.ifNull(args.remap, false); // should pixel values be remapped?
+  var rmap = f.ifNull(args.rmap, false); // should pixel values be remapped?
   var reproject = f.ifNull(args.reproject, true)
   var convertTo3Class = f.ifNull(args.rr3Class, true); // by default convert RR to 3 classes (from 4)
   
