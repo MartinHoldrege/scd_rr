@@ -150,7 +150,7 @@ Change in class of SEI and RR
 exports.classChangeAgree = function(args) {
   
   var reproject = f.ifNull(args.reproject, true);
-  var rr3Class = f.ifNull(arge.rr3Class, false);
+  var rr3Class = f.ifNull(arg.rr3Class, false);
   var argsHist = f.copyDict(args);
   argsHist.scen = 'historical';
   var c3Fut = load.getC3(args);
