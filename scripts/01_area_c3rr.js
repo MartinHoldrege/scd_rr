@@ -15,8 +15,8 @@ var f = require("users/MartinHoldrege/scd_rr:src/general_functions.js");
 
 // params ---------------------------------------------------------------------
 
-var v = 'v1' // version, for appending to output
-var testRun = false;
+var v = 'v1'; // version, for appending to output
+var testRun = true;
 var region = SEI.region;
 var scale = 90; // this is the scale of the scd data
 
@@ -26,6 +26,7 @@ var scenarioL0 = ['historical', 'RCP45_2031-2060', 'RCP45_2071-2100',
 var varRrL0 = ['Resil-cats', 'Resist-cats'];
 var summaryL0 = ['median']; // for now can only median (this is the summary across GCMs)
 var run = 'Default'; // STEPWAT modeling assumptions
+
 if (testRun) {
   var region = ee.Geometry.Polygon(
         [[[-111.9, 41.94],
@@ -67,14 +68,14 @@ for(var i = 0; i < scenarioL.length; i++) {
   var varRr = varRrL[i];
   var summary = summaryL[i];
   
-  // create image where first digit is SEI class, second is R&R class
-  var c3RrImage = over.createC3RrOverlay({
+  // first digit is historical SEI class, 2nd is historical RR, 3rd future SEI class, 4th future Rr class;
+  var comb = over.c3RrHistFutOverlay({
     scen: scen,
-    run: 'Default',
+    run: run,
     varName: varRr
   });
-  print(i, c3RrImage); // for debugging
-  var area0 = f.areaByGroup(c3RrImage, 'c3Rr', region, scale);
+  
+  var area0 = f.areaByGroup2(comb, 'c3RrHist_c3RrFut', region, scale);
   
   var area1 = area0.map(function(feature) {
     
@@ -98,7 +99,7 @@ for(var i = 0; i < scenarioL.length; i++) {
 if(testRun) {
   var fileName = 'test_area_c3rr';
 } else {
-  var fileName = 'area_c3rr_' + v;
+  var fileName = 'area_c3rr_historical_future_' + v;
 }
 
 Export.table.toDrive({
