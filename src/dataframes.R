@@ -7,12 +7,12 @@ source('src/general_functions.R')
 # returns same dataframe but with new c3, RR, and c3Rr_name cols
 create_c3_rr_cols <- function(df) {
   
-  stopifnot('c3RrHist_C3RrFut' %in% names(df),
+  stopifnot('c3RrHist_c3RrFut' %in% names(df),
             # don't want to cols being created to already
             #exist
             !c('c3', 'RR', 'c3Rr_name') %in% names(df))
   
-  x <- df$c3RrHist_C3RrFut
+  x <- df$c3RrHist_c3RrFut
   
   c3_vals <- 1:3 # possible c3 levels
   rr_vals <- 1:3 # possible rr levels

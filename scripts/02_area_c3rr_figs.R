@@ -25,6 +25,21 @@ assumption <- 'Default'
 area1 <- read_csv('data_processed/area/area_c3rr_historical_future_v1.csv',
                   show_col_types = FALSE)
 
+
+# vectors -----------------------------------------------------------------
+
+lookup_c3Rr_simple <- c(`Both improve` = "Both stable (or improve)", 
+                        `SEI improve` = "Both stable (or improve)", 
+                        `RR improve` = "Both stable (or improve)", 
+                        `Stable` = "Both stable (or improve)", 
+                        `SEI improve, RR decline` = "RR class decline", 
+                        `SEI decline, RR improve` = "SEI class decline",
+                        `SEI decline` = "SEI class decline", 
+                        `RR decline` = "RR class decline", 
+                        `Both decline` = "Both decline"
+
+)
+
 # prepare data ------------------------------------------------------------
 
 area2 <- area1 %>% 
@@ -50,9 +65,21 @@ c3Rr_change <- area3 %>%
   mutate(c3Rr_change = c3Rr_class_change(c3_hist = c3_hist,
                                          c3_fut = c3_fut,
                                          RR_hist = RR_hist,
-                                         RR_fut = RR_fut)) %>% 
+                                         RR_fut = RR_fut),
+         c3Rr_change = factor(c3Rr_change,
+                              levels = names(lookup_c3Rr_simple))) %>% 
   group_by(assumption, scenario, summary, variableRR, c3Rr_change) %>% 
-  summarize(area_ha = sum(area_ha))
+  summarize(area_ha = sum(area_ha),
+            .groups = 'drop')
+
+# simplified c3Rr_change categories (same categories shown on map)
+c3Rr_change_simple <- c3Rr_change %>% 
+  mutate(c3Rr_change = lookup_c3Rr_simple[c3Rr_change],
+         c3Rr_change = factor(c3Rr_change,
+                              levels = unique(lookup_c3Rr_simple))) %>% 
+  group_by(assumption, scenario, summary, variableRR, c3Rr_change) %>% 
+  summarize(area_ha = sum(area_ha),
+            .groups = 'drop')
 
 #
 c3hist_RRfut <- area3 %>% 
@@ -135,6 +162,17 @@ ggplot(c3Rr_change, aes(c3Rr_change, area_ha, fill = scenario)) +
        y = lab_areaha,
        caption = paste('Median change in class, relative to historical class',
                        cap0))
+
+ggplot(c3Rr_change_simple, aes(scenario, area_ha, fill = c3Rr_change)) +
+  geom_bar(stat = "identity", position = 'dodge') +
+  facet_wrap(~variableRR) +
+  rotate_x() +
+  labs(x = 'Scenario',
+       y = lab_areaha,
+       caption = paste('Median change in class, relative to historical class',
+                       cap0)) +
+  scale_fill_manual(values = cols_classChange_simple,
+                    name = 'Class change')
 dev.off()
 
 

@@ -80,15 +80,15 @@ c3Rr_class_change <- function(c3_hist, c3_fut, RR_hist, RR_fut) {
   
   out <- case_when(
     # lower levels of the factor are better
-    c3_hist == c3_fut & RR_hist == RR_fut ~ 'No Change',
-    c3_hist == c3_fut & RR_hist < RR_fut ~ 'RR Worsen',
-    c3_hist < c3_fut & RR_hist == RR_fut ~ 'SEI Worsen',
-    c3_hist < c3_fut & RR_hist < RR_fut ~ 'Both Worsen',
-    c3_hist > c3_fut & RR_hist > RR_fut ~ 'Both Improve',
-    c3_hist == c3_fut & RR_hist > RR_fut ~ 'RR Improve',
-    c3_hist > c3_fut & RR_hist == RR_fut ~ 'SEI Improve',
-    c3_hist > c3_fut & RR_hist < RR_fut |
-      c3_hist < c3_fut & RR_hist > RR_fut ~ 'Opposite Changes'
+    c3_hist == c3_fut & RR_hist == RR_fut ~ 'Stable',
+    c3_hist == c3_fut & RR_hist < RR_fut ~ 'RR decline',
+    c3_hist < c3_fut & RR_hist == RR_fut ~ 'SEI decline',
+    c3_hist < c3_fut & RR_hist < RR_fut ~ 'Both decline',
+    c3_hist > c3_fut & RR_hist > RR_fut ~ 'Both improve',
+    c3_hist == c3_fut & RR_hist > RR_fut ~ 'RR improve',
+    c3_hist > c3_fut & RR_hist == RR_fut ~ 'SEI improve',
+    c3_hist > c3_fut & RR_hist < RR_fut ~ 'SEI improve, RR decline',
+    c3_hist < c3_fut & RR_hist > RR_fut ~ 'SEI decline, RR improve'
   )
   out
 }
