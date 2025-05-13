@@ -59,7 +59,7 @@ exports.matchProjections = matchProjections;
  * 
  * @return {ee.FeatureCollection} area of each unique value in groupName
 */
-exports.areaByGroup2 = function(image, groupName, region, scale, toDouble) {
+exports.areaByGroup2 = function(image, groupName, region, scale) {
   
 
   var areaImage0 = matchProjections(image, ee.Image.pixelArea())
